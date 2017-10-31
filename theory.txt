@@ -8,7 +8,29 @@ neurons will remember the neurons they reach out to
 if they reach out to another neuron, then weight + 1
 the weight multiplier will have to be experimented with
 
+whats good or bad is determined by instincts
+
 a neuron's reach is determined by a weighted random
-a neuron is most likely to reach to neurons that they've reached to before
-they're also more likely to reach to a neuron that a child neuron has reached to before
+a neuron is most likely to reach to a neuron that was reached to before, and eventually had a good outcome
+a neuron is more likely to reach to neurons that they've reached to before
+they're also more likely to reach to a neuron that a child neuron that has been reached to before by a child Neuron
 this can continue to more children. The depth should be experimented with
+
+rules for weight
+reach with good outcome. the sooner the good outcome was realized, the better. better if
+
+following rules decay over distance of a reach
+good outcome of relevant frequently used reach realized quickly (more advanced)
+good outcome of relevant frequently used reach realized later
+good outcome of frequently used reach realized quickly
+good outcome of frequently used reach realized later
+good outcome of used reach realized quickly
+good outcome of used reach realized later
+good outcome of rarely used reach realized quickly
+good outcome of rarely used reach realized later
+relative frequently used reach
+good outcome of frequently used reach
+...
+...
+...
+random reach
