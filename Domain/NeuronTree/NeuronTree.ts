@@ -8,8 +8,13 @@ class NeuronTree {
         exits.map(addExit);
     }
 
-    public addEntry(input): EntryNeuron {
-        return new EntryNeuron(input);
+    public observe(input): Neuron {
+        // const inputLooseHash = looseHashInput(input);
+        const hash = getHash(input);
+    }
+
+    public addEntry {
+
     }
 
     public addExit() {
@@ -19,4 +24,12 @@ class NeuronTree {
     public add(neuron: Neuron) {
         neuronBag.push(neuron);
     }
+
+    /**
+     * Generates a hash with the possibility of range symbolizatio
+     *
+     */
+    // private looseHashInput(input) {
+    //
+    // }
 }

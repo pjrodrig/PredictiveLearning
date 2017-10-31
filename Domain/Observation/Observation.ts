@@ -1,0 +1,6 @@
+class Observation {
+
+    constructor() {
+        
+    }
+}
