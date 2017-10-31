@@ -1,0 +1,17 @@
+build basic neuron data structure
+neuron
+in - pipe - out
+
+in - the input of the problem
+{
+   xPosition: 34,
+   yPosition: 14,
+   whatever: true,
+   whatever2: 'asdf'
+}
+
+pipe
+associations(shortcuts) between other neurons
+
+out
+the action taken
