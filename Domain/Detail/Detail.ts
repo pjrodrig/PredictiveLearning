@@ -1,4 +1,4 @@
-class Detail {
+export class Detail {
 
     private value: any;
     private tags: Array<string>;

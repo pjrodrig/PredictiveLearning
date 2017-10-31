@@ -9,21 +9,25 @@ class Tag {
         this.tagBag = tagBag;
     }
 
-    enforceRelations(tags: Array<Tag>) {
-        tags.map(enforceRelations);
+    private enforceRelations(tags: Array<Tag>) {
+        tags.map(this.enforceRelation);
     }
 
-    enforceRelation(tag: Tag) {
+    private enforceRelation(tag: Tag) {
         const tagName = tag.getName();
-        const relation = relationDictionary[tagName] : 0;
-        relationDictionary[tagName] = relation++;
-        forgetInsignificantRelations();
+        let relation = this.relationDictionary[tagName] || 0;
+        this.relationDictionary[tagName] = relation++;
+        this.forgetInsignificantRelations();
     }
 
     /**
      * TODO: forgetInsignificantRelations
      */
-    forgetInsignificantRelations() {
+    private forgetInsignificantRelations() {
         //Placeholder for future improvements
+    }
+
+    public getName(): string {
+        return this.name;
     }
 }

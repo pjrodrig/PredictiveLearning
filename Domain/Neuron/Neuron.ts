@@ -1,5 +1,7 @@
-//Basic Neuron
-class Neuron {
+import { NeuronTree } from "../NeuronTree/NeuronTree";
+import { WeightedNeuronTree } from "../NeuronTree/WeightedNeuronTree";
+
+export class Neuron {
 
     private neuronTree: NeuronTree
     private exit: boolean;
@@ -14,14 +16,15 @@ class Neuron {
     }
 
     private reach(depth): void {
-        _search(depth);
+        this.search(depth);
     }
 
     private search(depth): Neuron {
-        _assignWeightsToNeurons(depth);
+        this.assignWeightsToNeurons(depth);
+        return null;
     }
 
-    private _assignWeightsToNeurons(depth): WeightNeuronTree {
-
+    private assignWeightsToNeurons(depth): WeightedNeuronTree {
+        return null;
     }
 }

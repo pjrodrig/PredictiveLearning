@@ -1,6 +1,6 @@
 import { Detail } from "../Detail/Detail";
 
-class Observation {
+export class Observation {
 
     private details: Array<Detail>;
     private exits: Array<Array<Tag>>;
@@ -13,5 +13,13 @@ class Observation {
 
     public getDetails() {
         return this.details;
+    }
+
+    public getExits() {
+        return this.exits;
+    }
+
+    public getTags() {
+        return this.tags;
     }
 }

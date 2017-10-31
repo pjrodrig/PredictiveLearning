@@ -1,26 +1,34 @@
-import { Neuron } from "../Neuron/neuron";
-import { EntryNeuron } from "../Neuron/EntryNeuron";
+import { Neuron } from "../Neuron/Neuron";
+import { ExitNeuron } from "../Neuron/ExitNeuron";
+import { Observation } from "../Observation/Observation";
 import { Tag } from "../Tag/Tag";
 
-class NeuronTree {
+export class NeuronTree {
     private neuronBag: Array<Neuron>;
-    constructor(exits?: Array<Tag>) {
+    private isTraining: boolean;
+
+    constructor(exits?: Array<Array<Tag>>) {
         this.neuronBag = [];
-        exits.map(addExit);
+        this.isTraining = false;
+        if(exits) {
+            exits.map(this.addExit);
+        }
     }
 
-    public observe(observation: Observation): Neuron {
-
+    public observe(observation: Observation): ExitNeuron {
+        observation.getExits().map(this.addExit);
+        observation.getDetails();
+        return null;
     }
 
-    public addExit(tag: Tag) {
-        let newExit = new ExitNeuron(tag);
-        neuronBag.push(newExit);
+    public addExit(tags: Array<Tag>) {
+        let newExit = new ExitNeuron(this, tags);
+        this.neuronBag.push(newExit);
         return newExit;
     }
 
     public add(neuron: Neuron) {
-        neuronBag.push(neuron);
+        this.neuronBag.push(neuron);
     }
 
     public startTraining() {
@@ -29,6 +37,10 @@ class NeuronTree {
 
     public stopTraining() {
         
+    }
+
+    public getNeuronBag() {
+
     }
 
     /**
