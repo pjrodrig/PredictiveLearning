@@ -1,0 +1,14 @@
+instincts are the key to evolving minds
+brain network randomly chooses traits to associate with success
+previously used trait groupings have a higher chance of being used
+if the result is the same, then the weight of its evaluation is raised, otherwise the weight is lowered, or in some cases forgotten
+
+
+neurons will remember the neurons they reach out to
+if they reach out to another neuron, then weight + 1
+the weight multiplier will have to be experimented with
+
+a neuron's reach is determined by a weighted random
+a neuron is most likely to reach to neurons that they've reached to before
+they're also more likely to reach to a neuron that a child neuron has reached to before
+this can continue to more children. The depth should be experimented with
