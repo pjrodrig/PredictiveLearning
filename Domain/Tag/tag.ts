@@ -9,6 +9,10 @@ export class Tag {
         this.tagBag = tagBag;
     }
 
+    public getWeight(tag: Tag) {
+        return this.relationDictionary[tag.getName()] || 0;
+    }
+
     private enforceRelations(tags: Array<Tag>) {
         tags.map(this.enforceRelation);
     }

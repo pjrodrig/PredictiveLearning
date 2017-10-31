@@ -17,7 +17,7 @@ export class Detail {
         return this.tags;
     }
 
-    public getStrength() {
+    public getStrength(): number {
         return this.strength;
     }
 }

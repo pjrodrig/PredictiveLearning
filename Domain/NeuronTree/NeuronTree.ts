@@ -6,11 +6,11 @@ import { Tag } from "../Tag/Tag";
 
 export class NeuronTree {
     private neuronBag: Array<Neuron>;
-    private isTraining: boolean;
+    private training: boolean;
 
     constructor(exits?: Array<Array<Tag>>) {
         this.neuronBag = [];
-        this.isTraining = false;
+        this.training = false;
         if(exits) {
             exits.map(this.addExit);
         }
@@ -25,13 +25,14 @@ export class NeuronTree {
 
     public observe(observation: Observation): ExitNeuron {
         observation.getExits().map(this.addExit);
-        observation.getDetails();
+        const details = observation.getDetails();
+
         return null;
     }
 
     public getWeightedNeurons(details: Array<Detail>) {
         this.neuronBag.map((neuron) => {
-            neuron.getWeight();
+            //neuron.getWeight();
         });
     }
 
@@ -39,12 +40,8 @@ export class NeuronTree {
         this.neuronBag.push(neuron);
     }
 
-    public startTraining() {
-
-    }
-
-    public stopTraining() {
-        
+    public setTraining(training) {
+        this.training = training;
     }
 
     /**

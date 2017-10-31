@@ -4,10 +4,14 @@ import { Detail } from "../Detail/Detail";
 
 export class Neuron {
     protected exit: boolean;
+    private connections: Array<Neuron>;
+    private relatedTags: any;
 
     constructor(private neuronTree: NeuronTree){
         this.neuronTree = neuronTree;
         this.exit = false;
+        this.connections = [];
+        this.relatedTags = {};
     }
 
     public attach(): void {
@@ -33,7 +37,14 @@ export class Neuron {
         return weight;
     }
 
-    public getDetailWeight(detail: Detail) {
+    public getDetailWeight(detail: Detail): number {
+        let weight = 0;
+        for(let key in this.relatedTags) {
+            if(this.relatedTags.hasOwnProperty(key)) {
+                let tag = this.relatedTags[key];
 
+            }
+        }
+        return weight;
     }
 }
