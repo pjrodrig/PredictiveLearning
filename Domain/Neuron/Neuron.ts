@@ -1,10 +1,12 @@
 //Basic Neuron
 class Neuron {
 
-    private neuronTree: NeuronTree;
+    private neuronTree: NeuronTree
+    private exit: boolean;
 
     constructor(private neuronTree: NeuronTree){
         this.neuronTree = neuronTree;
+        this.exit = false;
     }
 
     public attach(input): void {

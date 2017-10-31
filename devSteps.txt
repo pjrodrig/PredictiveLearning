@@ -30,3 +30,7 @@ can even change the weight of search item to weigh it in decision making more he
 neuron tree will have maintenance methods
 tags will be cleaned up
 tag groups will be found by searching neurons holding tags
+
+training sessions is the collection of neuron paths that will be effected by good/bad choices
+
+more advanced learning includes imitation

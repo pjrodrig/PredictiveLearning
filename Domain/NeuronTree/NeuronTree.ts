@@ -1,28 +1,34 @@
-import { Neuron } from "../Neuron/neuron"
-import { EntryNeuron } from "../Neuron/EntryNeuron"
+import { Neuron } from "../Neuron/neuron";
+import { EntryNeuron } from "../Neuron/EntryNeuron";
+import { Tag } from "../Tag/Tag";
 
 class NeuronTree {
     private neuronBag: Array<Neuron>;
-    constructor(exits?: Array<string>) {
+    constructor(exits?: Array<Tag>) {
         this.neuronBag = [];
         exits.map(addExit);
     }
 
-    public observe(input): Neuron {
-        // const inputLooseHash = looseHashInput(input);
-        const hash = getHash(input);
-    }
-
-    public addEntry {
+    public observe(observation: Observation): Neuron {
 
     }
 
-    public addExit() {
-
+    public addExit(tag: Tag) {
+        let newExit = new ExitNeuron(tag);
+        neuronBag.push(newExit);
+        return newExit;
     }
 
     public add(neuron: Neuron) {
         neuronBag.push(neuron);
+    }
+
+    public startTraining() {
+
+    }
+
+    public stopTraining() {
+        
     }
 
     /**

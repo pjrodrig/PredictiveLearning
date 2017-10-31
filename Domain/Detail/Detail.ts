@@ -2,9 +2,11 @@ class Detail {
 
     private value: any;
     private tags: Array<string>;
-    constructor(value: any, tags: Array<string>) {
+    private strength: number;
+    constructor(value: any, tags: Array<string>, strength: number) {
         this.value = value;
         this.tags = tags;
+        this.strength = strength;
     }
 
     public getValue(): any {
@@ -13,5 +15,9 @@ class Detail {
 
     public getTags(): Array<string> {
         return this.tags;
+    }
+
+    public getStrength() {
+        return this.strength;
     }
 }
