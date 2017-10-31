@@ -1,10 +1,10 @@
-class Tag {
+export class Tag {
 
     private name: string;
-    private tagBag;
-    private relationDictionary;
+    private tagBag: any;
+    private relationDictionary: any;
 
-    constructor(name: string, tagBag) {
+    constructor(name: string, tagBag: any) {
         this.name = name;
         this.tagBag = tagBag;
     }
@@ -29,5 +29,9 @@ class Tag {
 
     public getName(): string {
         return this.name;
+    }
+
+    public getTagBag(): Array<Tag> {
+        return this.tagBag;
     }
 }

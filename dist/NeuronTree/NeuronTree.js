@@ -7,21 +7,16 @@ export class NeuronTree {
             exits.map(this.addExit);
         }
     }
-    addExit(tags) {
-        let newExit = new ExitNeuron(this);
-        newExit.addTags(tags);
-        this.neuronBag.push(newExit);
-        return newExit;
-    }
     observe(observation) {
         observation.getExits().map(this.addExit);
         observation.getDetails();
         return null;
     }
-    getWeightedNeurons(details) {
-        this.neuronBag.map((neuron) => {
-            neuron.getWeight();
-        });
+    addExit(tags) {
+        let newExit = new ExitNeuron(this);
+        newExit.addTags(tags);
+        this.neuronBag.push(newExit);
+        return newExit;
     }
     add(neuron) {
         this.neuronBag.push(neuron);
@@ -29,5 +24,7 @@ export class NeuronTree {
     startTraining() {
     }
     stopTraining() {
+    }
+    getNeuronBag() {
     }
 }

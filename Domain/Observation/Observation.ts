@@ -1,4 +1,5 @@
 import { Detail } from "../Detail/Detail";
+import { Tag } from "../Tag/Tag";
 
 export class Observation {
 

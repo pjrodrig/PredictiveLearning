@@ -1,6 +1,7 @@
 import { Neuron } from "../Neuron/Neuron";
 import { ExitNeuron } from "../Neuron/ExitNeuron";
 import { Observation } from "../Observation/Observation";
+import { Detail } from "../Detail/Detail";
 import { Tag } from "../Tag/Tag";
 
 export class NeuronTree {
@@ -15,16 +16,23 @@ export class NeuronTree {
         }
     }
 
+    public addExit(tags: Array<Tag>) {
+        let newExit = new ExitNeuron(this);
+        newExit.addTags(tags);
+        this.neuronBag.push(newExit);
+        return newExit;
+    }
+
     public observe(observation: Observation): ExitNeuron {
         observation.getExits().map(this.addExit);
         observation.getDetails();
         return null;
     }
 
-    public addExit(tags: Array<Tag>) {
-        let newExit = new ExitNeuron(this, tags);
-        this.neuronBag.push(newExit);
-        return newExit;
+    public getWeightedNeurons(details: Array<Detail>) {
+        this.neuronBag.map((neuron) => {
+            neuron.getWeight();
+        });
     }
 
     public add(neuron: Neuron) {
@@ -37,10 +45,6 @@ export class NeuronTree {
 
     public stopTraining() {
         
-    }
-
-    public getNeuronBag() {
-
     }
 
     /**

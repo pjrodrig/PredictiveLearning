@@ -16,12 +16,4 @@ export class Neuron {
     assignWeightsToNeurons(depth) {
         return null;
     }
-    getWeight(details) {
-        let weight = 0;
-        details.map(this.getWeight);
-        return weight;
-    }
-    getWeight(detail) {
-        console.log('detail', detail);
-    }
 }
