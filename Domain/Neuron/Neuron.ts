@@ -1,50 +1,38 @@
 import { NeuronTree } from "../NeuronTree/NeuronTree";
 import { WeightedNeuronTree } from "../NeuronTree/WeightedNeuronTree";
 import { Detail } from "../Detail/Detail";
+import { MathUtil } from "../../Util/MathUtil";
 
 export class Neuron {
     protected exit: boolean;
-    private connections: Array<Neuron>;
-    private relatedTags: any;
+    private connections: Array<any>;
+    private relatedTags: Array<any>;
 
     constructor(private neuronTree: NeuronTree){
         this.neuronTree = neuronTree;
         this.exit = false;
         this.connections = [];
-        this.relatedTags = {};
+        this.relatedTags = [];
     }
 
     public attach(): void {
 
     }
 
-    private reach(depth: number): void {
-        this.search(depth);
+    public getWeight(parentNeuron: Neuron, details: Array<Detail>): number {
+        let totalWeight = 0;
+        details.map(this.getDetailWeight).reduce(MathUtil.sum, 0);
+        return totalWeight;
     }
 
-    private search(depth: number): Neuron {
-        this.assignWeightsToNeurons(depth);
-        return null;
-    }
-
-    private assignWeightsToNeurons(depth: number): WeightedNeuronTree {
-        return null;
-    }
-
-    public getWeight(details: Array<Detail>): number {
-        let weight = 0;
-        details.map(this.getWeight);
-        return weight;
-    }
-
-    public getDetailWeight(detail: Detail): number {
-        let weight = 0;
-        for(let key in this.relatedTags) {
-            if(this.relatedTags.hasOwnProperty(key)) {
-                let tag = this.relatedTags[key];
-
-            }
-        }
-        return weight;
+    private getDetailWeight(detail: Detail): number {
+        const
+            detailTags = detail.getTags(),
+            detailValue = detail.getValue();
+        return this.relatedTags.map((tagInfo) => {
+            detailTags.map((tag) => {
+                return tagInfo.tag.getRelationWeight(tag, detailValue);
+            }).reduce(MathUtil.sum, 0);
+        }).reduce(MathUtil.sum, 0);
     }
 }
