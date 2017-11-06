@@ -1,0 +1,2 @@
+the tournament system is ineffective at finding the "strongest", second strongest, etc because if the strongest beats the second strongest in the first  round, then it will not be ranked at second
+number of required elimination rounds determines accuracy

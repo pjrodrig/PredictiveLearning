@@ -26,7 +26,9 @@ export class NeuronTree {
     public observe(observation: Observation): ExitNeuron {
         observation.getExits().map(this.addExit);
         const details = observation.getDetails();
-
+        neuronBag.map((neuron) {
+            neuron.getWeight(details);
+        });
         return null;
     }
 

@@ -34,3 +34,5 @@ tag groups will be found by searching neurons holding tags
 training sessions is the collection of neuron paths that will be effected by good/bad choices
 
 more advanced learning includes imitation
+
+memory is a key part of the system. not just vague memory, but detailed memory as well

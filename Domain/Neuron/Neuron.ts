@@ -19,7 +19,7 @@ export class Neuron {
 
     }
 
-    public getWeight(parentNeuron: Neuron, details: Array<Detail>): number {
+    public getWeight(details: Array<Detail>): number {
         let totalWeight = 0;
         details.map(this.getDetailWeight).reduce(MathUtil.sum, 0);
         return totalWeight;
@@ -32,7 +32,7 @@ export class Neuron {
         return this.relatedTags.map((tagInfo) => {
             detailTags.map((tag) => {
                 return tagInfo.tag.getRelationWeight(tag, detailValue);
-            }).reduce(MathUtil.sum, 0);
+            }).reduce(Math.max, Number.NEGATIVE_INFINITY);
         }).reduce(MathUtil.sum, 0);
     }
 }
