@@ -7,9 +7,9 @@ const Action_1 = require("../../Domain/Action/Action");
 class Game {
     constructor() {
         this.board = [
-            [{ player: null }, { player: null }, { player: null }],
-            [{ player: null }, { player: null }, { player: null }],
-            [{ player: null }, { player: null }, { player: null }]
+            [null, null, null],
+            [null, null, null],
+            [null, null, null]
         ];
     }
     getBoardObservation(player) {
@@ -17,8 +17,8 @@ class Game {
         const details = [new Detail_1.Detail(player, [new Tag_1.Tag('player')])];
         for (let x = 0; x < this.board.length; x++) {
             for (let y = 0; y < this.board[x].length; y++) {
-                details.push(new Detail_1.Detail(this.board[x][y].player, [new Tag_1.Tag(`(${x},${y})`)]));
-                if (!this.board[x][y].player) {
+                details.push(new Detail_1.Detail(this.board[x][y], [new Tag_1.Tag(`(${x},${y})`)]));
+                if (!this.board[x][y]) {
                     actions.push(new Action_1.Action([new Tag_1.Tag(`(${x},${y})`)]));
                 }
             }
@@ -27,7 +27,7 @@ class Game {
     }
     move(player, action) {
         const coordString = action.getTags()[0].getName();
-        this.board[Number.parseFloat(coordString[1])][Number.parseFloat(coordString[3])].player = player;
+        this.board[Number.parseFloat(coordString[1])][Number.parseFloat(coordString[3])] = player;
     }
     checkForWin(player) {
         return this.checkRowsForWin(player)
@@ -39,7 +39,7 @@ class Game {
         for (let x = 0; x < 3; x++) {
             matches = true;
             for (let y = 0; matches && y < 3; y++) {
-                matches = this.board[x][y].player === player;
+                matches = this.board[x][y] === player;
             }
             if (matches) {
                 break;
@@ -52,7 +52,7 @@ class Game {
         for (let y = 0; y < 3; y++) {
             matches = true;
             for (let x = 0; matches && x < 3; x++) {
-                matches = this.board[x][y].player === player;
+                matches = this.board[x][y] === player;
             }
             if (matches) {
                 break;
@@ -67,18 +67,15 @@ class Game {
     checkLeftDiagForWin(player) {
         let matches = true;
         for (let i = 0; matches && i < 3; i++) {
-            matches = this.board[i][2 - i].player === player;
+            matches = this.board[i][2 - i] === player;
         }
-        console.log('check left diag for win', matches);
         return matches;
     }
     checkRightDiagForWin(player) {
         let matches = true;
         for (let i = 0; matches && i < 3; i++) {
-            console.log(i, this.board[i][i].player, player);
-            matches = this.board[i][i].player === player;
+            matches = this.board[i][i] === player;
         }
-        console.log('check right diag for win', matches);
         return matches;
     }
     getBoard() {

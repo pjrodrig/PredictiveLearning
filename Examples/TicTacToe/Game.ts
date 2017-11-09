@@ -8,9 +8,9 @@ export class Game {
 
     constructor() {
         this.board = [
-            [{player: null}, {player: null}, {player: null}],
-            [{player: null}, {player: null}, {player: null}],
-            [{player: null}, {player: null}, {player: null}]
+            [null, null, null],
+            [null, null, null],
+            [null, null, null]
         ];
     }
 
@@ -19,8 +19,8 @@ export class Game {
         const details: Array<Detail> = [new Detail(player, [new Tag('player')])];
         for(let x = 0; x < this.board.length; x++) {
             for(let y = 0; y < this.board[x].length; y++) {
-                details.push(new Detail(this.board[x][y].player, [new Tag(`(${x},${y})`)]));
-                if(!this.board[x][y].player) {
+                details.push(new Detail(this.board[x][y], [new Tag(`(${x},${y})`)]));
+                if(!this.board[x][y]) {
                     actions.push(new Action([new Tag(`(${x},${y})`)]));
                 }
             }
@@ -30,7 +30,7 @@ export class Game {
 
     public move(player: string, action: Action): void {
         const coordString = action.getTags()[0].getName();
-        this.board[Number.parseFloat(coordString[1])][Number.parseFloat(coordString[3])].player = player;
+        this.board[Number.parseFloat(coordString[1])][Number.parseFloat(coordString[3])] = player;
     }
 
     public checkForWin(player: string): boolean {
@@ -44,7 +44,7 @@ export class Game {
         for(let x = 0; x < 3; x++) {
             matches = true;
             for(let y = 0; matches && y < 3; y++) {
-                matches = this.board[x][y].player === player;
+                matches = this.board[x][y] === player;
             }
             if(matches) {
                 break;
@@ -58,7 +58,7 @@ export class Game {
         for(let y = 0; y < 3; y++) {
             matches = true;
             for(let x = 0; matches && x < 3; x++) {
-                matches = this.board[x][y].player === player;
+                matches = this.board[x][y] === player;
             }
             if(matches) {
                 break;
@@ -75,19 +75,16 @@ export class Game {
     private checkLeftDiagForWin(player: string): boolean {
         let matches = true;
         for(let i = 0; matches && i < 3; i++) {
-            matches = this.board[i][2-i].player === player;
+            matches = this.board[i][2-i] === player;
         }
-        console.log('check left diag for win', matches);
         return matches;
     }
 
     private checkRightDiagForWin(player: string): boolean {
         let matches = true;
         for(let i = 0; matches && i < 3; i++) {
-            console.log(i, this.board[i][i].player, player);
-            matches = this.board[i][i].player === player;
+            matches = this.board[i][i] === player;
         }
-        console.log('check right diag for win', matches);
         return matches;
     }
 
