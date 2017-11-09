@@ -1,7 +1,12 @@
-export class Tag {
-    constructor(name, tagBag) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class Tag {
+    constructor(name) {
         this.name = name;
-        this.tagBag = tagBag;
+    }
+    getWeight(tag, value) {
+        //TODO: use value in calculation
+        return this.relationDictionary[tag.getName()] || 0;
     }
     enforceRelations(tags) {
         tags.map(this.enforceRelation);
@@ -22,3 +27,4 @@ export class Tag {
         return this.name;
     }
 }
+exports.Tag = Tag;

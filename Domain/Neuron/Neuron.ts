@@ -1,7 +1,8 @@
 import { NeuronTree } from "../NeuronTree/NeuronTree";
-import { WeightedNeuronTree } from "../NeuronTree/WeightedNeuronTree";
 import { Detail } from "../Detail/Detail";
 import { MathUtil } from "../../Util/MathUtil";
+import { Observation } from "../Observation/Observation";
+import { Tag } from "../Tag/Tag";
 
 export class Neuron {
     protected exit: boolean;
@@ -15,24 +16,41 @@ export class Neuron {
         this.relatedTags = [];
     }
 
-    public attach(): void {
-
+    public attach(observation: Observation): any {
+        MathUtil.weightedRandom(this.search(observation, 3));
+        return null;
     }
 
-    public getWeight(details: Array<Detail>): number {
-        let totalWeight = 0;
-        details.map(this.getDetailWeight).reduce(MathUtil.sum, 0);
-        return totalWeight;
+    private search(observation: Observation, depth: number): Array<Neuron> {
+        let result: Array<Neuron> = [];
+        this.connections.map((connection) => {
+            result.push(connection);
+            return depth ? connection.search(observation, depth - 1) : [
+                {
+                    neuron: connection,
+                    weight: connection.getWeight(observation)
+                }
+            ];
+        }).reduce((previous, current) => {
+            return previous.concat(current);
+        }, result);
+        return result;
+    }
+
+    public getWeight(observation: Observation): number {
+        return observation.getDetails().map(this.getDetailWeight).reduce(MathUtil.sum, 0);
     }
 
     private getDetailWeight(detail: Detail): number {
         const
-            detailTags = detail.getTags(),
-            detailValue = detail.getValue();
-        return this.relatedTags.map((tagInfo) => {
-            detailTags.map((tag) => {
-                return tagInfo.tag.getRelationWeight(tag, detailValue);
-            }).reduce(Math.max, Number.NEGATIVE_INFINITY);
+            detailTags: Array<Tag> = detail.getTags(),
+            detailValue: any = detail.getValue();
+        return this.relatedTags.map((tagInfo): number => {
+            return detailTags.map((tag): number => {
+                return tagInfo.tag.getWeight(tag, detailValue);
+            }).reduce((max, current) => {
+                return max > current ? max : current;
+            }, Number.NEGATIVE_INFINITY);
         }).reduce(MathUtil.sum, 0);
     }
 }

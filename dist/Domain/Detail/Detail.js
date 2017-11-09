@@ -1,8 +1,9 @@
-export class Detail {
-    constructor(value, tags, strength) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class Detail {
+    constructor(value, tags) {
         this.value = value;
         this.tags = tags;
-        this.strength = strength;
     }
     getValue() {
         return this.value;
@@ -14,3 +15,4 @@ export class Detail {
         return this.strength;
     }
 }
+exports.Detail = Detail;

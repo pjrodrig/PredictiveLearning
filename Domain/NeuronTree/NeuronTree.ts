@@ -7,6 +7,7 @@ import { Tag } from "../Tag/Tag";
 export class NeuronTree {
     private neuronBag: Array<Neuron>;
     private training: boolean;
+    private root: Neuron;
 
     constructor(exits?: Array<Array<Tag>>) {
         this.neuronBag = [];
@@ -14,6 +15,7 @@ export class NeuronTree {
         if(exits) {
             exits.map(this.addExit);
         }
+        this.root = new Neuron(this);
     }
 
     public addExit(tags: Array<Tag>) {
@@ -24,12 +26,7 @@ export class NeuronTree {
     }
 
     public observe(observation: Observation): ExitNeuron {
-        observation.getExits().map(this.addExit);
-        const details = observation.getDetails();
-        neuronBag.map((neuron) {
-            neuron.getWeight(details);
-        });
-        return null;
+        return this.root.attach(observation);
     }
 
     public getWeightedNeurons(details: Array<Detail>) {
@@ -42,15 +39,7 @@ export class NeuronTree {
         this.neuronBag.push(neuron);
     }
 
-    public setTraining(training) {
+    public setTraining(training: boolean) {
         this.training = training;
     }
-
-    /**
-     * Generates a hash with the possibility of range symbolizatio
-     *
-     */
-    // private looseHashInput(input) {
-    //
-    // }
 }

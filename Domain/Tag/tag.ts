@@ -1,15 +1,14 @@
 export class Tag {
 
     private name: string;
-    private tagBag: any;
     private relationDictionary: any;
 
-    constructor(name: string, tagBag: any) {
+    constructor(name: string) {
         this.name = name;
-        this.tagBag = tagBag;
     }
 
-    public getWeight(tag: Tag) {
+    public getWeight(tag: Tag, value: any): number {
+        //TODO: use value in calculation
         return this.relationDictionary[tag.getName()] || 0;
     }
 
@@ -33,9 +32,5 @@ export class Tag {
 
     public getName(): string {
         return this.name;
-    }
-
-    public getTagBag(): Array<Tag> {
-        return this.tagBag;
     }
 }

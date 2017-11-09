@@ -1,33 +1,35 @@
-import { ExitNeuron } from "../Neuron/ExitNeuron";
-export class NeuronTree {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Neuron_1 = require("../Neuron/Neuron");
+const ExitNeuron_1 = require("../Neuron/ExitNeuron");
+class NeuronTree {
     constructor(exits) {
         this.neuronBag = [];
-        this.isTraining = false;
+        this.training = false;
         if (exits) {
             exits.map(this.addExit);
         }
+        this.root = new Neuron_1.Neuron(this);
     }
     addExit(tags) {
-        let newExit = new ExitNeuron(this);
+        let newExit = new ExitNeuron_1.ExitNeuron(this);
         newExit.addTags(tags);
         this.neuronBag.push(newExit);
         return newExit;
     }
     observe(observation) {
-        observation.getExits().map(this.addExit);
-        observation.getDetails();
-        return null;
+        return this.root.attach(observation);
     }
     getWeightedNeurons(details) {
         this.neuronBag.map((neuron) => {
-            neuron.getWeight();
+            //neuron.getWeight();
         });
     }
     add(neuron) {
         this.neuronBag.push(neuron);
     }
-    startTraining() {
-    }
-    stopTraining() {
+    setTraining(training) {
+        this.training = training;
     }
 }
+exports.NeuronTree = NeuronTree;

@@ -1,6 +1,5 @@
 import { Neuron } from "./Neuron";
 import { NeuronTree } from "../NeuronTree/NeuronTree";
-import { WeightedNeuronTree } from "../NeuronTree/WeightedNeuronTree";
 import { Tag } from "../Tag/Tag";
 
 export class ExitNeuron extends Neuron {

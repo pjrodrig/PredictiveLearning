@@ -1,26 +1,28 @@
 import { Detail } from "../Detail/Detail";
 import { Tag } from "../Tag/Tag";
+import { Action } from "../Action/Action";
 
 export class Observation {
 
     private details: Array<Detail>;
-    private exits: Array<Array<Tag>>;
-    private tags: Array<string>;
+    private actions: Array<Action>;
+    private tags: Array<Tag>;
 
-    constructor(details: Array<Detail>, exits: Array<Array<Tag>>, tags?: Array<string>) {
+    constructor(details: Array<Detail>, actions: Array<Action>, tags?: Array<Tag>) {
         this.tags = tags || [];
         this.details = details;
+        this.actions = actions
     }
 
-    public getDetails() {
+    public getDetails(): Array<Detail> {
         return this.details;
     }
 
-    public getExits() {
-        return this.exits;
+    public getActions(): Array<Action> {
+        return this.actions;
     }
 
-    public getTags() {
+    public getTags(): Array<Tag> {
         return this.tags;
     }
 }

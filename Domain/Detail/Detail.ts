@@ -1,19 +1,20 @@
+import { Tag } from "../Tag/Tag";
+
 export class Detail {
 
     private value: any;
-    private tags: Array<string>;
+    private tags: Array<Tag>;
     private strength: number;
-    constructor(value: any, tags: Array<string>, strength: number) {
+    constructor(value: any, tags: Array<Tag>) {
         this.value = value;
         this.tags = tags;
-        this.strength = strength;
     }
 
     public getValue(): any {
         return this.value;
     }
 
-    public getTags(): Array<string> {
+    public getTags(): Array<Tag> {
         return this.tags;
     }
 
