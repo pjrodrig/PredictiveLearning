@@ -1,0 +1,6 @@
+a new neural network should be applied to grouping neurons together and determining relations
+good or bad is just true or false the value of good or bad is based on the complexity of the problem
+if a problem took 10 steps to solve, then the value of the last decision is 10.
+the value of the decision is only important for predicting outcomes
+each input will be weighed separately and as a group
+if inputs tend to be in a group and separately listed on a neuron, then it will be grouped in a smaller group with the other input
