@@ -5,7 +5,7 @@ export class Thought {
     private neurons: Array<Neuron>;
 
     constructor(){
-
+        this.neurons = [];
     }
 
     public observe(inputs, actions) {
