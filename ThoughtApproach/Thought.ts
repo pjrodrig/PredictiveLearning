@@ -52,6 +52,8 @@ export class Thought {
         //something as simple as choosing x:1 and y:1 to place an X in tic tac toe can predict that the next input will show an x in that position
         // the temporary neurons are like a short term memory
         // the short term memory will be limited and will grow over time. TODO: OBTIMIZABLE
+
+        // TODO need to handle adding actual outcome as a future prediction
     }
 
     /**
