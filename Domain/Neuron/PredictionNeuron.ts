@@ -17,8 +17,8 @@ export class PredictionNeuron extends Neuron {
         return this.inputs;
     }
 
-    public getRelationWeight() {
-
+    public getRelationWeight(inputs: any): number {
+        return 0;
     }
 
     public isEqual(other: PredictionNeuron): boolean {

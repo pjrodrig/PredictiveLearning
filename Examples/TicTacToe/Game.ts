@@ -1,8 +1,3 @@
-import { Observation } from "../../Domain/Observation/Observation";
-import { Detail } from "../../Domain/Detail/Detail";
-import { Tag } from "../../Domain/Tag/Tag";
-import { Action } from "../../Domain/Action/Action";
-
 export class Game {
     private board: Array<Array<any>>;
 
@@ -14,23 +9,29 @@ export class Game {
         ];
     }
 
-    public getBoardObservation(player: string): Observation {
-        const actions: Array<Action> = [];
-        const details: Array<Detail> = [new Detail(player, [new Tag('player')])];
+    public getBoardObservation(player: string): any {
+        const actions: Array<any> = [];
+        const inputs: any = {};
+        const self = this;
         for(let x = 0; x < this.board.length; x++) {
             for(let y = 0; y < this.board[x].length; y++) {
-                details.push(new Detail(this.board[x][y], [new Tag(`(${x},${y})`)]));
+                inputs[`(${x},${y})`] = this.board[x][y];
                 if(!this.board[x][y]) {
-                    actions.push(new Action([new Tag(`(${x},${y})`)]));
+                    let action = {
+                        name: `(${x},${y})`,
+                        callback: () => {
+                            self.move.apply(self, [player, action.name]);
+                        }
+                    };
+                    actions.push(action);
                 }
             }
         }
-        return new Observation(details, actions);
+        return {inputs: inputs, actions: actions};
     }
 
-    public move(player: string, action: Action): void {
-        const coordString = action.getTags()[0].getName();
-        this.board[Number.parseFloat(coordString[1])][Number.parseFloat(coordString[3])] = player;
+    public move(player: string, action: string): void {
+        this.board[Number.parseFloat(action[1])][Number.parseFloat(action[3])] = player;
     }
 
     public checkForWin(player: string): boolean {

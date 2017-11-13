@@ -7,11 +7,10 @@ export class DecisionNeuron extends Neuron {
     //Neurons will purge their predictions once a cap has been reached or a time limit has been reached TODO: OPTIMIZABLE
     private predictions: Array<PredictionNeuron>;
 
-    constructor(children: Array<Neuron>, predictionsPromise: Promise<any>) {
+    constructor(children: Array<Neuron>, predictions: Array<PredictionNeuron>) {
         super();
         this.children = children;
-        this.predictions = [];
-        predictionsPromise.then(this.updatePredictions);
+        this.predictions = predictions;
     }
 
     private updatePredictions(predictions: Array<PredictionNeuron>): void {
@@ -35,15 +34,20 @@ export class DecisionNeuron extends Neuron {
         }
     }
 
-    private getWeight(inputs: any, goal: any): number {
+    public getWeight(inputs: any, goal: any): number {
         let mostLikelyPredictions = this.predictions.map((prediction: PredictionNeuron) => {
             return {
                 weight: prediction.getRelationWeight(inputs),
                 prediction: prediction
             };
-        }).reduce((mostLikely: Array<any>, weightedPrediction) => {
-
+        }).reduce((mostLikely: Array<any>, weightedPrediction: any) => {
+            if(weightedPrediction.weight > 0) {
+                mostLikely.push(weightedPrediction);
+            }
+            return mostLikely;
         }, []);
         return 0;
     }
+
+    public takeAction() {}
 }

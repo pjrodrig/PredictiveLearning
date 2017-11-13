@@ -14,7 +14,7 @@ export class Goal {
         return this.description;
     }
 
-    public isEqual(other) {
+    public isEqual(other: Goal) {
         let equal = this.rating === other.rating && this.description === other.description;
         const otherValues = other.getValues();
         if(equal) {

@@ -4,7 +4,7 @@ export class Neuron {
 
     }
 
-    public getWeight(inputs: any): number {
+    public getWeight(inputs: any, goals: any): number {
         return 0;
     }
 
