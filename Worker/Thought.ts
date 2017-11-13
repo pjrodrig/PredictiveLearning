@@ -1,3 +1,6 @@
+import { Neuron, ActionNeuron, DecisionNeuron, Goal } from "./Domain/index";
+import {PredictionNeuron} from "./Domain/Neuron/PredictionNeuron";
+
 export class Thought {
 
     private static MIN_CONSIDER_THRESHOLD = 0;
@@ -12,32 +15,32 @@ export class Thought {
     @param instincts: Array of addInstincts
     See documentation for addInstinct for more information
     **/
-    public addInstincts(instincts: Array<any>): void {
-        for(let i = 0; i < instincts.length; i++) {
-            addInstinct(instincts[i]);
+    public addGoals(goals: Array<Goal>): void {
+        for(let i = 0; i < goals.length; i++) {
+            this.addGoal(goals[i]);
         }
     }
 
     /**
     Determines whether an outcome is good or bad.
     Negative values are bad, and positive values are good.
-    @param instinct: {
+    @param goal: {
         values: object containing possible inputs
         rating: good or bad rating for inputs. negative is bad. positive is good.
         description: optional description of the state for human readability
     }
     **/
-    public addInstinct(instinct: any): void {
-        if(checkIfInstinctExists(instinct, value, )) {
+    public addGoal(goal: Goal): void {
+        if(checkIfGoalExists(goal, value, )) {
             
         }
     }
 
-    private checkIfInstinctExist(instinct: any): boolean {
+    private checkIfGoalExist(goal: Goal): boolean {
 
     }
 
-    public observe(inputs, actions): void {
+    public observe(inputs: any, actions?: any): void {
         // given inputs
         /**
         input: {
@@ -45,7 +48,7 @@ export class Thought {
         }
         **/
         //could maybe cache this for short term use for related or equal inputs
-        let weightedNeurons: Array<any> this.searchNeuronsForRelationToInputs(inputs: any); //Array<{weight: number, neuron: Neuron}>
+        let weightedNeurons: Array<any> = this.searchNeuronsForRelationToInputs(inputs); //Array<{weight: number, neuron: Neuron}>
         let neuronFound = false;
         let choice;
         //while an action has not been taken loop through neurons
@@ -59,8 +62,11 @@ export class Thought {
         }
         if(!neuronFound) {
             // Base case for a new/untrained neural network
-            choice = new DecisionNeuron(inputs, [new ActionNeuron(this.getRandomAction(actions))], predictionsPromise);
-            neurons.push(choice);
+            // pick random action
+            let action = actions[Math.floor(Math.random() * actions.length)],
+                predictions = makePredictions();
+            choice = new DecisionNeuron(inputs, [new ActionNeuron(action, predictions)];
+            this.neurons.push(choice);
             //TODO:
             //create a new neuron and make a prediction neuron
             //if the prediction comes true, then keep the prediction neuron as a next step before deciding on choosing this action, otherwise delete it
@@ -90,7 +96,7 @@ export class Thought {
     Once neurons are related, then a depth can start to be provided to determine how far to search
     **/
     private searchNeuronsForRelationToInputs(inputs: any, depth?: number): Array<Neuron> {
-        let weigthedNeurons: Array<any> = this.neurons.map((neuron: Neuron) => { //{weight: number, neuron: Neuron}
+        let weightedNeurons: Array<any> = this.neurons.map((neuron: Neuron) => { //{weight: number, neuron: Neuron}
             return {
                 weight: neuron.getWeight(inputs),
                 neuron: neuron
@@ -106,5 +112,10 @@ export class Thought {
         return weightedNeurons.sort((a: any, b: any) => {
             return a.weight - b.weight;
         });
+    }
+
+    private makePredictions(): Promise<PredictionNeuron> {
+        //TODO: figure this out
+        return null;
     }
 }

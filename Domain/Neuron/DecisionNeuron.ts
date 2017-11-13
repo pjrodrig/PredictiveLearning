@@ -1,3 +1,6 @@
+import { Neuron } from "./Neuron";
+import { PredictionNeuron } from "./PredictionNeuron";
+
 export class DecisionNeuron extends Neuron {
 
     private children: Array<Neuron>;
@@ -8,7 +11,7 @@ export class DecisionNeuron extends Neuron {
         super();
         this.children = children;
         this.predictions = [];
-        predictionsPromise.then(updatePredictions);
+        predictionsPromise.then(this.updatePredictions);
     }
 
     private updatePredictions(predictions: Array<PredictionNeuron>): void {
@@ -32,14 +35,15 @@ export class DecisionNeuron extends Neuron {
         }
     }
 
-    private getWeight(inputs: any, goal: any) {
+    private getWeight(inputs: any, goal: any): number {
         let mostLikelyPredictions = this.predictions.map((prediction: PredictionNeuron) => {
             return {
                 weight: prediction.getRelationWeight(inputs),
                 prediction: prediction
             };
         }).reduce((mostLikely: Array<any>, weightedPrediction) => {
-            if()
+
         }, []);
+        return 0;
     }
 }

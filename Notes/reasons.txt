@@ -1,0 +1,5 @@
+not only should the network make predictions, but it should provide reasons for those predictions
+reasons and strength of reasons will be what determines the weight of choosing an action
+
+The default reasons generated will probably just be input1 = x -> good
+reasons will keep track of their correctness
