@@ -8,7 +8,36 @@ export class Thought {
         this.neurons = [];
     }
 
-    public observe(inputs, actions) {
+    /**
+    @param instincts: Array of addInstincts
+    See documentation for addInstinct for more information
+    **/
+    public addInstincts(instincts: Array<any>): void {
+        for(let i = 0; i < instincts.length; i++) {
+            addInstinct(instincts[i]);
+        }
+    }
+
+    /**
+    Determines whether an outcome is good or bad.
+    Negative values are bad, and positive values are good.
+    @param instinct: {
+        values: object containing possible inputs
+        rating: good or bad rating for inputs. negative is bad. positive is good.
+        description: optional description of the state for human readability
+    }
+    **/
+    public addInstinct(instinct: any): void {
+        if(checkIfInstinctExists(instinct, value, )) {
+            
+        }
+    }
+
+    private checkIfInstinctExist(instinct: any): boolean {
+
+    }
+
+    public observe(inputs, actions): void {
         // given inputs
         /**
         input: {
@@ -60,7 +89,7 @@ export class Thought {
     Should eventually search a ordered neuron tree based on related neurons. there will be a smaller group of neurons responsible for searching for an entry point when problems get more complex
     Once neurons are related, then a depth can start to be provided to determine how far to search
     **/
-    private searchNeuronsForRelationToInputs(inputs: any, depth?: number) {
+    private searchNeuronsForRelationToInputs(inputs: any, depth?: number): Array<Neuron> {
         let weigthedNeurons: Array<any> = this.neurons.map((neuron: Neuron) => { //{weight: number, neuron: Neuron}
             return {
                 weight: neuron.getWeight(inputs),
