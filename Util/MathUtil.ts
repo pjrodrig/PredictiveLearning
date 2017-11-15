@@ -4,13 +4,19 @@ export class MathUtil {
         return a + b;
     }
 
-    public static weightedRandom(weightedArray: Array<any>, total?: number) {
+    public static weightedRandom(weightedArray: Array<any>, total?: number, weightKey?: string): any {
         total = total || this.getTotalWeight(weightedArray);
         let selection = total - (Math.random() * total);
+        weightKey = weightKey || 'weight';
+        let random;
         for(let i = 0; selection >= 0; i++) {
-            selection = selection - weightedArray[i].weight;
-
+            random = weightedArray[i];
+            selection = selection - random[weightKey];
+            if(selection <= 0) {
+                break;
+            }
         }
+        return random;
     }
 
     private static getTotalWeight(weightedArray: Array<any>): number {

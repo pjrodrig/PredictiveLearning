@@ -1,21 +1,24 @@
 import {
     Neuron,
     ActionNeuron,
-    DecisionNeuron,
-    PredictionNeuron,
+    RootNeuron,
     Goal
 } from "../Domain/index";
+import {
+    MathUtil,
+    Util
+} from "../Util/index";
 
 export class Thought {
 
-    private static MIN_CONSIDER_THRESHOLD = 0;
-
-    private neurons: Array<Neuron>;
+    private root: RootNeuron;
     private goals: Array<Goal>;
+    private actionNeurons: Array<ActionNeuron>;
 
     constructor(){
-        this.neurons = [];
+        this.root = new RootNeuron();
         this.goals = [];
+        this.actionNeurons = [];
     }
 
     /**
@@ -43,6 +46,10 @@ export class Thought {
         }
     }
 
+    private checkGoal() {
+
+    }
+
     private goalExists(goal: Goal): boolean {
         let exists = false;
         for(let i = 0; !exists && i < this.goals.length; i++) {
@@ -51,88 +58,63 @@ export class Thought {
         return exists;
     }
 
-    public observe(inputs: any, actions?: any): void {
-        // given inputs
-        /**
-        input: {
-            name: value //later will support more identifiers than name
-        }
-        **/
-        this.updatePredictions(inputs, actions);
+    public observe = (inputs: any, actions?: any): void => {
         if(actions) {
-            //could maybe cache this for short term use for related or equal inputs
-            let weightedNeurons: Array<any> = this.searchNeuronsForRelationToInputs(inputs); //Array<{weight: number, neuron: Neuron}>
-            let neuronFound = false;
-            let choice;
-            //while an action has not been taken loop through neurons
-            for(let i = 0; !neuronFound && i < weightedNeurons.length; i++) {
-            //TODO:
-                //check the neuron's memory for anything that may be related to these inputs
-                //if choices have been made in the past, explore them to decide what to do
-                //if an uncertain but predictable choice exists, choose it
-                //if a certain choice exists, evaluate if it is good or bad
-                //if the choice is good, then choose it, if it is bad, then move to the next neuron
+            this.updateActionNeurons(actions, inputs);
+            let weightedActions: Array<any> = [];
+            let totalSignalStrength = 0;
+            this.root.connect(inputs, 1, (weightedAction: any) => {
+                weightedActions.push(weightedAction);
+                totalSignalStrength += weightedAction.signalStrength;
+            });
+            let action;
+            if (weightedActions.length) {
+                let averageSignalStrength = totalSignalStrength / weightedActions.length;
+                let actionName = MathUtil.weightedRandom(weightedActions.reduce((aboveAverageActions, weightedAction) => {
+                    if (weightedAction.signalStrength >= averageSignalStrength) {
+                        aboveAverageActions.push(weightedAction);
+                    }
+                    return aboveAverageActions;
+                }, []));
+                action = this.getActionByName(actions, actionName);
+            } else {
+                action = actions[Math.floor(Math.random() * actions.length)];
+                let logic = Util.getRandomLogic(inputs);
+                this.root.addChild(new ActionNeuron(this.root, 0.5, logic, action.name));
             }
-            if(!neuronFound) {
-                // Base case for a new/untrained neural network
-                // pick random action
-                let action = actions[Math.floor(Math.random() * actions.length)],
-                    predictions = this.makePredictions();
-                choice = new DecisionNeuron(inputs, [new PredictionNeuron(inputs)]);
-                this.neurons.push(choice);
-                //TODO:
-                //create a new neuron and make a prediction neuron
-                //if the prediction comes true, then keep the prediction neuron as a next step before deciding on choosing this action, otherwise delete it
-                //the creation of prediction neurons can be multi threaded and can be multiple
-                //the creation of the prediction neurons will then use the outcome to determine whether they stay or go
-                // predictions that were made when another prediction came true are also enforced, but not as heavily
-                // predictions that are realized later up to a threshold become more valuable as the future was predicted
-            }
-            //take action
-            choice.takeAction();
-            //TODO
-            // asynchronously wait for outcome
-            // save choices and wait for responce. if responce never comes, then forget choices
-            // time or iterations waiting for a good or bad outcome should increase over time until solutions are found
-
-            //not only does bad/good matter, but so does change. if change happens, then we can predict that the change may happen again next time
-            //the network would not know what the outcome of an action is before choosing it.
-            //something as simple as choosing x:1 and y:1 to place an X in tic tac toe can predict that the next input will show an x in that position
-            // the temporary neurons are like a short term memory
-            // the short term memory will be limited and will grow over time. TODO: OBTIMIZABLE
-
-            // TODO need to handle adding actual outcome as a future prediction
+            action.callback();
         }
-    }
+        if()
+    };
 
-    private updatePredictions(inputs: any, actions?: any) {
-    }
-
-    /**
-    Should eventually search a ordered neuron tree based on related neurons. there will be a smaller group of neurons responsible for searching for an entry point when problems get more complex
-    Once neurons are related, then a depth can start to be provided to determine how far to search
-    **/
-    private searchNeuronsForRelationToInputs(inputs: any, depth?: number): Array<Neuron> {
-        let weightedNeurons: Array<any> = this.neurons.map((neuron: Neuron) => { //{weight: number, neuron: Neuron}
-            return {
-                weight: neuron.getWeight(inputs, []),
-                neuron: neuron
-            };
-        }).reduce((overThreshold: Array<any>, weightedNeuron: any) => {
-            if(weightedNeuron.weight > Thought.MIN_CONSIDER_THRESHOLD) {
-                overThreshold.push(weightedNeuron);
+    private getActionByName(actions: Array<any>, actionName: string): any {
+        let action;
+        for (let i = 0; i < actions.length; i++) {
+            action = actions[i];
+            if(action.name === actionName) {
+                break;
             }
-            return overThreshold;
-        }, []);
-        //could probably make this return something more useful at some point TODO: OBTIMIZABLE
-        // should sort based on whether it is good or bad, and certain or uncertain with some randomness
-        return weightedNeurons.sort((a: any, b: any) => {
-            return a.weight - b.weight;
-        });
+        }
+        return action;
     }
 
-    private makePredictions(): Promise<PredictionNeuron> {
-        //TODO: figure this out
-        return null;
+    private updateActionNeurons(actions: Array<any>, inputs: any): void {
+        let action;
+        for(let i = 0; i < actions.length; i++) {
+            action = actions[i];
+            if(!this.containsActionNeuron(action)) {
+                let logic = Util.getRandomLogic(inputs);
+                this.root.addChild(new ActionNeuron(this.root, 0.5, logic, action.name));
+            }
+        }
+
+    }
+
+    private containsActionNeuron(action: any): boolean {
+        let found = false;
+        for(let i = 0; !found && i < this.actionNeurons.length; i++) {
+            found = this.actionNeurons[i].getAction() === action.name;
+        }
+        return found;
     }
 }

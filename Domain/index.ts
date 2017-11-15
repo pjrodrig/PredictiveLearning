@@ -1,11 +1,10 @@
-import { Neuron, ActionNeuron, DecisionNeuron, PredictionNeuron } from "./Neuron/index";
+import { Neuron, ActionNeuron, RootNeuron } from "./Neuron/index";
 import { Goal } from "./Goal/Goal";
 
 export {
     Neuron,
     ActionNeuron,
-    DecisionNeuron,
-    PredictionNeuron,
+    RootNeuron,
     Goal
 }
 
