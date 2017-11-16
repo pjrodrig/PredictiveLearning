@@ -21,7 +21,7 @@ export class Neuron {
 
     public connect(inputs: any, signalStrength: number, callback: any): void {
         signalStrength = signalStrength * this.signalModifier;
-        if(signalStrength > 0.2) {
+        if(signalStrength > ) {
             let child;
             for(let i = 0; i < this.children.length; i++) {
                 child = this.children[i];
@@ -75,7 +75,7 @@ export class Neuron {
         if(Math.random() > 0.8) {
             this.getCopy(new Neuron(this.parent, 0.5, this.logic, 1 - this.signalModifier));
         }
-        if(this.signalModifier < 0.01) {
+        if(this.signalModifier < 0.2) {
             this.parent.removeChild(this);
         }
     }

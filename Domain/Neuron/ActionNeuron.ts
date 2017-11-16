@@ -25,7 +25,7 @@ export class ActionNeuron extends Neuron {
         if(Math.random() > 0.8) {
             this.getCopy(new Neuron(this.parent, 0.5));
         }
-        if(this.signalModifier < 0.01) {
+        if(this.signalModifier < 0.2) {
             this.parent.removeChild(this);
         }
     }

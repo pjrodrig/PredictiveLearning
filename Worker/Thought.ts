@@ -90,13 +90,18 @@ export class Thought {
             let action;
             if (weightedActions.length) {
                 let averageSignalStrength = totalSignalStrength / weightedActions.length;
+                let max = 0;
                 weightedActions = weightedActions.reduce((aboveAverageActions, weightedAction) => {
                     if (weightedAction.signalStrength >= averageSignalStrength) {
+                        if(weightedAction.signalStrength > max) {
+                            max = weightedAction.signalStrength;
+                        }
                         aboveAverageActions.push(weightedAction);
                     }
                     return aboveAverageActions;
                 }, []);
                 let chosenWeightedAction = MathUtil.weightedRandom(weightedActions, null, 'signalStrength');
+                console.log(weightedActions.length, max, chosenWeightedAction.signalStrength);
                 action = chosenWeightedAction.action;
                 this.memory.push(chosenWeightedAction.neuron);
             } else {

@@ -36,8 +36,8 @@ for(let i = 0; i < gameCount; i++) {
      //    displayResults(i);
      //}
 }
-//displayResults();
-console.log(network.printTree());
+displayResults();
+//console.log(network.printTree());
 function displayResults(count?: number) {
     console.log('-------------------------');
     console.log(observers[0].name + ' wins: ' + observers[0].winCount);
