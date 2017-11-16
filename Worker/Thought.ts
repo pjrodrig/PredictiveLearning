@@ -16,6 +16,8 @@ export class Thought {
     private actionNeurons: Array<ActionNeuron>;
     private memory: Array<ActionNeuron>;
 
+    private EFFORT: number = 10;
+
     constructor(){
         this.root = new RootNeuron();
         this.goals = [];
@@ -78,7 +80,7 @@ export class Thought {
             this.updateActionNeurons(actions, inputs);
             let weightedActions: Array<any> = [],
                 totalSignalStrength = 0;
-            this.root.connect(inputs, 1, (weightedAction: any) => {
+            this.root.connect(inputs, this.EFFORT, (weightedAction: any) => {
                 weightedAction.action = this.getActionByName(actions, weightedAction.actionName);
                 if(weightedAction.action) {
                     weightedActions.push(weightedAction);
@@ -100,7 +102,7 @@ export class Thought {
             } else {
                 action = actions[Math.floor(Math.random() * actions.length)];
                 let logic = Util.getRandomLogic(inputs),
-                    newActionNeuron = new ActionNeuron(this.root, 0.5, logic, action.name);
+                    newActionNeuron = new ActionNeuron(this.root, 0.5, action.name, logic);
                 this.root.addChild(newActionNeuron);
                 this.memory.push(newActionNeuron);
             }
@@ -109,9 +111,10 @@ export class Thought {
     };
 
     private mutate(goal: Goal) {
-        let ratingFraction = goal.getRating()/this.memory.length;
+        let rating = goal.getRating()/this.memory.length;
         for(let i = 0; i < this.memory.length; i++) {
-            this.memory[i].mutate(1 + (ratingFraction * i));
+            let modifier = (this.memory.length - i);
+            this.memory[i].mutate((rating + ((modifier - 1) * 0.5))/ modifier, 0.5);
         }
     }
 
@@ -134,7 +137,7 @@ export class Thought {
             action = actions[i];
             if(!this.containsActionNeuron(action)) {
                 let logic = Util.getRandomLogic(inputs);
-                let actionNeuron = new ActionNeuron(this.root, 0.5, logic, action.name);
+                let actionNeuron = new ActionNeuron(this.root, 0.5, action.name, logic);
                 this.root.addChild(actionNeuron);
                 this.actionNeurons.push(actionNeuron);
             }

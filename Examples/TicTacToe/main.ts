@@ -10,9 +10,9 @@ let network = new Thought();
 network.addGoals([
     new Goal({player: 'X', gameOver: 'X'}, 1, "Win as X"),
     new Goal({player: 'O', gameOver: 'O'}, 1, "Win as O"),
-    new Goal({gameOver: 'Draw'}, -0.1, "Draw"),
-    new Goal({player: 'X', gameOver: 'O'}, -1, "Lose as X"),
-    new Goal({player: 'O', gameOver: 'X'}, -1, "Lose as O")
+    new Goal({gameOver: 'Draw'}, 0.2, "Draw"),
+    new Goal({player: 'X', gameOver: 'O'}, 0, "Lose as X"),
+    new Goal({player: 'O', gameOver: 'X'}, 0, "Lose as O")
 ]);
 
 let observers: Array<any> = [
@@ -32,13 +32,12 @@ let roles: Array<string> = ['X', 'O'];
 let drawCount: number = 0;
 for(let i = 0; i < gameCount; i++) {
     playGame();
-    // if(i%10 === 0) {
-    //     displayResults(i);
-    // }
+     //if(i%100 === 0) {
+     //    displayResults(i);
+     //}
 }
-displayResults();
+//displayResults();
 console.log(network.printTree());
-
 function displayResults(count?: number) {
     console.log('-------------------------');
     console.log(observers[0].name + ' wins: ' + observers[0].winCount);

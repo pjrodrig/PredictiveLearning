@@ -17,7 +17,7 @@ export class Util {
             key = keys.splice(Math.floor(Math.random() * keys.length), 1)[0];
             randomLogic[key] = (currentInputs: any) => {
                 return inputs[key] === currentInputs[key];
-            }
+            };
         }
         return randomLogic;
     }

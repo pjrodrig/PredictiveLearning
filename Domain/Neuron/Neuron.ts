@@ -5,18 +5,18 @@ export class Neuron {
     private children: Array<Neuron>;
     protected parent: Neuron;
     protected signalModifier: number;
-    private logic: any; //{inputKey: function(inputValue): boolean true if matches pattern
+    protected logic: any; //{inputKey: function(inputValue): boolean true if matches pattern
+    private logicMutationSeverity: number;
 
-    constructor(parent: Neuron, signalModifier: number, logic?: any, children?: Array<Neuron>) {
+    constructor(parent: Neuron, signalModifier: number, logic?: any, logicMutationSeverity?: number) {
         this.parent = parent;
+        if(this.parent) {
+            this.parent.addChild(this);
+        }
         this.logic = logic || null;
         this.signalModifier = signalModifier;
-        if(children) {
-            for(let i = 0; i < children.length; i++) {
-                children[i].setParent(this);
-            }
-        }
-        this.children = children || [];
+        this.children = [];
+        this.logicMutationSeverity = logicMutationSeverity;
     }
 
     public connect(inputs: any, signalStrength: number, callback: any): void {
@@ -36,6 +36,9 @@ export class Neuron {
         if(!this.logic) {
             this.logic = Util.getRandomLogic(inputs);
         }
+        if(this.logicMutationSeverity) {
+            this.mutateLogic(inputs);
+        }
         let follows = true;
         for(let key in this.logic) {
             if(this.logic[key] && !this.logic[key](inputs)) {
@@ -46,19 +49,47 @@ export class Neuron {
         return follows;
     }
 
-    public mutate(signalStrength: number): void { //TODO: OPTIMIZE I guessed what to do here
-        this.signalModifier = this.signalModifier * signalStrength;
-        if(this.signalModifier < 0.5) {
-            if(Math.random() > 0.8) {
-                this.parent.addChild(new Neuron(this.parent, 0.5));
-            }
-        } else {
-            if(Math.random() > 0.8) {
-                this.parent.addChild(new Neuron(this.parent, 0.5, null, this.children));
-            }
+    private mutateLogic(inputs: any) {
+        let keys = Object.keys(this.logic),
+            mutations = Math.floor(keys.length * this.logicMutationSeverity),
+            key: string;
+        while(mutations) {
+            key = keys.splice(Math.floor(Math.random() * keys.length), 1)[0];
+            this.logic[key] = (currentInputs: any) => {
+                return inputs[key] === currentInputs[key];
+            };
+            mutations--;
         }
-        //TODO: destroy if under a threshold
-        this.parent.mutate(this.signalModifier * signalStrength);
+        this.logicMutationSeverity = 0;
+    }
+
+    public mutate(reinforceStrength: number, decay: number): void { //TODO: OPTIMIZE I guessed what to do here
+        if((reinforceStrength >= 0.5 && this.signalModifier < reinforceStrength)
+            || (reinforceStrength < 0.5 && this.signalModifier > reinforceStrength)) {
+            this.signalModifier = (reinforceStrength + this.signalModifier)/2;
+        }
+        this.parent.mutate((reinforceStrength + decay) / 2, decay);
+        if(Math.random() > 0.8) {
+            this.copyChildrenToParent(new Neuron(this.parent, 0.5, this.logic, 1 - this.signalModifier));
+        }
+        if(Math.random() > 0.8) {
+            this.getCopy(new Neuron(this.parent, 0.5, this.logic, 1 - this.signalModifier));
+        }
+        if(this.signalModifier < 0.01) {
+            this.parent.removeChild(this);
+        }
+    }
+
+    public copyChildrenToParent(parent: Neuron) {
+        this.children.map((child) => {
+            return child.getCopy(parent);
+        });
+    }
+
+    public getCopy(parent: Neuron) {
+        let copy = new Neuron(parent, this.signalModifier, this.logic);
+        this.copyChildrenToParent(copy);
+        return copy;
     }
 
     public removeChild(child: Neuron): void {
@@ -75,10 +106,6 @@ export class Neuron {
 
     public addChild(child: Neuron): void {
         this.children.push(child);
-    }
-
-    public setParent(parent: Neuron): void {
-        this.parent = parent;
     }
 
     public printTree(depth: number) {
