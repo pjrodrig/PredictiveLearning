@@ -14,6 +14,17 @@ export class Goal {
         return this.description;
     }
 
+    public isReached(inputs: any) {
+        let reached = true;
+        for(let key in this.values) {
+            if(this.values[key] !== inputs[key]) {
+                reached = false;
+                break;
+            }
+        }
+        return reached;
+    }
+
     public isEqual(other: Goal) {
         let equal = this.rating === other.rating && this.description === other.description;
         const otherValues = other.getValues();

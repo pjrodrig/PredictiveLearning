@@ -14,11 +14,13 @@ export class Thought {
     private root: RootNeuron;
     private goals: Array<Goal>;
     private actionNeurons: Array<ActionNeuron>;
+    private memory: Array<ActionNeuron>;
 
     constructor(){
         this.root = new RootNeuron();
         this.goals = [];
         this.actionNeurons = [];
+        this.memory = [];
     }
 
     /**
@@ -46,8 +48,16 @@ export class Thought {
         }
     }
 
-    private checkGoal() {
-
+    private checkGoals(inputs: any): Goal {
+        let goal = null,
+            current;
+        for(let i = 0; !goal && i < this.goals.length; i++) {
+            current = this.goals[i];
+            if(current.isReached(inputs)) {
+                goal = current;
+            }
+        }
+        return goal;
     }
 
     private goalExists(goal: Goal): boolean {
@@ -59,39 +69,59 @@ export class Thought {
     }
 
     public observe = (inputs: any, actions?: any): void => {
+        let goalReached = this.checkGoals(inputs);
+        if(goalReached) {
+            this.mutate(goalReached);
+            this.memory = [];
+        }
         if(actions) {
             this.updateActionNeurons(actions, inputs);
-            let weightedActions: Array<any> = [];
-            let totalSignalStrength = 0;
+            let weightedActions: Array<any> = [],
+                totalSignalStrength = 0;
             this.root.connect(inputs, 1, (weightedAction: any) => {
-                weightedActions.push(weightedAction);
-                totalSignalStrength += weightedAction.signalStrength;
+                weightedAction.action = this.getActionByName(actions, weightedAction.actionName);
+                if(weightedAction.action) {
+                    weightedActions.push(weightedAction);
+                    totalSignalStrength += weightedAction.signalStrength;
+                }
             });
             let action;
             if (weightedActions.length) {
                 let averageSignalStrength = totalSignalStrength / weightedActions.length;
-                let actionName = MathUtil.weightedRandom(weightedActions.reduce((aboveAverageActions, weightedAction) => {
+                weightedActions = weightedActions.reduce((aboveAverageActions, weightedAction) => {
                     if (weightedAction.signalStrength >= averageSignalStrength) {
                         aboveAverageActions.push(weightedAction);
                     }
                     return aboveAverageActions;
-                }, []));
-                action = this.getActionByName(actions, actionName);
+                }, []);
+                let chosenWeightedAction = MathUtil.weightedRandom(weightedActions, null, 'signalStrength');
+                action = chosenWeightedAction.action;
+                this.memory.push(chosenWeightedAction.neuron);
             } else {
                 action = actions[Math.floor(Math.random() * actions.length)];
-                let logic = Util.getRandomLogic(inputs);
-                this.root.addChild(new ActionNeuron(this.root, 0.5, logic, action.name));
+                let logic = Util.getRandomLogic(inputs),
+                    newActionNeuron = new ActionNeuron(this.root, 0.5, logic, action.name);
+                this.root.addChild(newActionNeuron);
+                this.memory.push(newActionNeuron);
             }
             action.callback();
         }
-        if()
     };
 
+    private mutate(goal: Goal) {
+        let ratingFraction = goal.getRating()/this.memory.length;
+        for(let i = 0; i < this.memory.length; i++) {
+            this.memory[i].mutate(1 + (ratingFraction * i));
+        }
+    }
+
     private getActionByName(actions: Array<any>, actionName: string): any {
-        let action;
+        let action = null,
+            current;
         for (let i = 0; i < actions.length; i++) {
-            action = actions[i];
-            if(action.name === actionName) {
+            current = actions[i];
+            if(current.name === actionName) {
+                action = current;
                 break;
             }
         }
@@ -104,7 +134,9 @@ export class Thought {
             action = actions[i];
             if(!this.containsActionNeuron(action)) {
                 let logic = Util.getRandomLogic(inputs);
-                this.root.addChild(new ActionNeuron(this.root, 0.5, logic, action.name));
+                let actionNeuron = new ActionNeuron(this.root, 0.5, logic, action.name);
+                this.root.addChild(actionNeuron);
+                this.actionNeurons.push(actionNeuron);
             }
         }
 
@@ -116,5 +148,9 @@ export class Thought {
             found = this.actionNeurons[i].getAction() === action.name;
         }
         return found;
+    }
+
+    public printTree() {
+        return this.root.printTree(0);
     }
 }
