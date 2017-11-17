@@ -4,80 +4,66 @@ export class Neuron {
 
     private children: Array<Neuron>;
     protected parent: Neuron;
-    protected signalModifier: number;
-    protected logic: any; //{inputKey: function(inputValue): boolean true if matches pattern
-    private logicMutationSeverity: number;
+    protected logic: any;
 
-    constructor(parent: Neuron, signalModifier: number, logic?: any, logicMutationSeverity?: number) {
+    private SIGNAL_STRENGTH_MIN = 2;
+
+    constructor(parent: Neuron, logic?: any) {
         this.parent = parent;
         if(this.parent) {
             this.parent.addChild(this);
         }
         this.logic = logic || null;
-        this.signalModifier = signalModifier;
         this.children = [];
-        this.logicMutationSeverity = logicMutationSeverity;
     }
 
     public connect(inputs: any, signalStrength: number, callback: any): void {
-        signalStrength = signalStrength * this.signalModifier;
-        if(signalStrength > ) {
-            let child;
-            for(let i = 0; i < this.children.length; i++) {
-                child = this.children[i];
-                if(child.checkLogic(inputs)) {
-                    child.connect(inputs, signalStrength, callback);
-                }
+        let child: Neuron,
+            childSignalStrength: number;
+        for(let i = 0; i < this.children.length; i++) {
+            child = this.children[i];
+            childSignalStrength = child.checkLogic(inputs) * signalStrength;
+            if(signalStrength > this.SIGNAL_STRENGTH_MIN) {
+                child.connect(inputs, signalStrength * child.checkLogic(inputs), callback);
             }
         }
     }
 
-    public checkLogic(inputs: any): boolean {
+    public checkLogic(inputs: any): number {
         if(!this.logic) {
-            this.logic = Util.getRandomLogic(inputs);
+            this.logic = Util.getLogic(inputs);
         }
-        if(this.logicMutationSeverity) {
-            this.mutateLogic(inputs);
+        let count = 0,
+            total = 0,
+            current: any;
+        for (let key in this.logic) {
+            current = this.logic[key];
+            total += current[current.check(inputs)];
+            count++;
         }
-        let follows = true;
+        return total/count;
+    }
+
+    public mutate(reinforceStrength: number, decay: number, inputs: any) {
+        let current: any,
+            follows: string;
         for(let key in this.logic) {
-            if(this.logic[key] && !this.logic[key](inputs)) {
-                follows = false;
-                break;
+            current = this.logic[key];
+            follows = current.check(inputs) + '';
+            if(follows) {
+                current[follows] = (current[follows] + reinforceStrength)/2;
+            } else if(reinforceStrength > 0.5){
+                current.weight = (current.weight + (1 - reinforceStrength))/2;
             }
         }
-        return follows;
+        if(reinforceStrength > 0.7) {
+            this.expand(inputs, Util.getLogic(inputs, 0.7));
+        }
+        this.parent.mutate((reinforceStrength + decay)/2, decay, inputs);
     }
 
-    private mutateLogic(inputs: any) {
-        let keys = Object.keys(this.logic),
-            mutations = Math.floor(keys.length * this.logicMutationSeverity),
-            key: string;
-        while(mutations) {
-            key = keys.splice(Math.floor(Math.random() * keys.length), 1)[0];
-            this.logic[key] = (currentInputs: any) => {
-                return inputs[key] === currentInputs[key];
-            };
-            mutations--;
-        }
-        this.logicMutationSeverity = 0;
-    }
-
-    public mutate(reinforceStrength: number, decay: number): void { //TODO: OPTIMIZE I guessed what to do here
-        if((reinforceStrength >= 0.5 && this.signalModifier < reinforceStrength)
-            || (reinforceStrength < 0.5 && this.signalModifier > reinforceStrength)) {
-            this.signalModifier = (reinforceStrength + this.signalModifier)/2;
-        }
-        this.parent.mutate((reinforceStrength + decay) / 2, decay);
-        if(Math.random() > 0.8) {
-            this.copyChildrenToParent(new Neuron(this.parent, 0.5, this.logic, 1 - this.signalModifier));
-        }
-        if(Math.random() > 0.8) {
-            this.getCopy(new Neuron(this.parent, 0.5, this.logic, 1 - this.signalModifier));
-        }
-        if(this.signalModifier < 0.2) {
-            this.parent.removeChild(this);
-        }
+    protected expand(inputs: any, logic: any) {
+        new Neuron(this.parent, logic);
     }
 
     public copyChildrenToParent(parent: Neuron) {
@@ -87,7 +73,7 @@ export class Neuron {
     }
 
     public getCopy(parent: Neuron) {
-        let copy = new Neuron(parent, this.signalModifier, this.logic);
+        let copy = new Neuron(parent, this.logic);
         this.copyChildrenToParent(copy);
         return copy;
     }
@@ -109,11 +95,26 @@ export class Neuron {
     }
 
     public printTree(depth: number) {
-        let treeString = depth ? `"${depth}-${this.signalModifier}"` : '';
+        let treeString = depth ? `"${depth}"` : '';
         for(let i = 0; i < this.children.length; i++) {
-            treeString = treeString + `"${depth}-${this.signalModifier}"->` + this.children[i].printTree(depth + 1)
+            treeString = treeString + `"${depth}"->` + this.children[i].printTree(depth + 1)
         }
         return treeString;
+    }
+
+    public printJSON(idObj: any) {
+        let jsonString = `"${++idObj.id}":{"id": ${idObj.id}`;
+        if(this.logic) {
+            for(let key in this.logic) {
+                jsonString = jsonString + `, "${key}": "${this.logic[key].value}"`
+            }
+        }
+        if(this.children.length) {
+            for(let i = 0; i < this.children.length; i++) {
+                jsonString = jsonString + ', ' + this.children[i].printJSON(idObj);
+            }
+        }
+        return jsonString + '}';
     }
 
 }

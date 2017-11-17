@@ -14,7 +14,7 @@ export class Thought {
     private root: RootNeuron;
     private goals: Array<Goal>;
     private actionNeurons: Array<ActionNeuron>;
-    private memory: Array<ActionNeuron>;
+    private memory: Array<any>;
 
     private EFFORT: number = 10;
 
@@ -101,25 +101,27 @@ export class Thought {
                     return aboveAverageActions;
                 }, []);
                 let chosenWeightedAction = MathUtil.weightedRandom(weightedActions, null, 'signalStrength');
-                console.log(weightedActions.length, max, chosenWeightedAction.signalStrength);
                 action = chosenWeightedAction.action;
-                this.memory.push(chosenWeightedAction.neuron);
+                this.memory.push({action: chosenWeightedAction.neuron, inputs: inputs});
             } else {
                 action = actions[Math.floor(Math.random() * actions.length)];
-                let logic = Util.getRandomLogic(inputs),
-                    newActionNeuron = new ActionNeuron(this.root, 0.5, action.name, logic);
+                let logic = Util.getLogic(inputs),
+                    newActionNeuron = new ActionNeuron(this.root, action.name, logic);
                 this.root.addChild(newActionNeuron);
-                this.memory.push(newActionNeuron);
+                this.memory.push({action: newActionNeuron, inputs: inputs});
             }
             action.callback();
         }
     };
 
     private mutate(goal: Goal) {
-        let rating = goal.getRating()/this.memory.length;
+        let rating = goal.getRating()/this.memory.length,
+            modifier,
+            current: any;
         for(let i = 0; i < this.memory.length; i++) {
-            let modifier = (this.memory.length - i);
-            this.memory[i].mutate((rating + ((modifier - 1) * 0.5))/ modifier, 0.5);
+            modifier = (this.memory.length - i);
+            current = this.memory[i];
+            current.action.mutate((rating + ((modifier - 1) * 0.5))/ modifier, 0.5, current.inputs);
         }
     }
 
@@ -141,8 +143,8 @@ export class Thought {
         for(let i = 0; i < actions.length; i++) {
             action = actions[i];
             if(!this.containsActionNeuron(action)) {
-                let logic = Util.getRandomLogic(inputs);
-                let actionNeuron = new ActionNeuron(this.root, 0.5, action.name, logic);
+                let logic = Util.getLogic(inputs);
+                let actionNeuron = new ActionNeuron(this.root, action.name, logic);
                 this.root.addChild(actionNeuron);
                 this.actionNeurons.push(actionNeuron);
             }
@@ -160,5 +162,9 @@ export class Thought {
 
     public printTree() {
         return this.root.printTree(0);
+    }
+
+    public printJSON() {
+        return `[{${this.root.printJSON({id: 0})}}]`;
     }
 }

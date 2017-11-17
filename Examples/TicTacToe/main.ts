@@ -32,12 +32,12 @@ let roles: Array<string> = ['X', 'O'];
 let drawCount: number = 0;
 for(let i = 0; i < gameCount; i++) {
     playGame();
-     //if(i%100 === 0) {
-     //    displayResults(i);
-     //}
+     if(i%100 === 0) {
+         displayResults(i);
+     }
 }
 displayResults();
-//console.log(network.printTree());
+//console.log(network.printJSON());
 function displayResults(count?: number) {
     console.log('-------------------------');
     console.log(observers[0].name + ' wins: ' + observers[0].winCount);
