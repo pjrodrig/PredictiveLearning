@@ -13,7 +13,6 @@ export class Thought {
 
     private root: RootNeuron;
     private goals: Array<Goal>;
-    private actionNeurons: Array<ActionNeuron>;
     private memory: Array<any>;
 
     private EFFORT: number = 10;
@@ -21,7 +20,6 @@ export class Thought {
     constructor(){
         this.root = new RootNeuron();
         this.goals = [];
-        this.actionNeurons = [];
         this.memory = [];
     }
 
@@ -77,7 +75,6 @@ export class Thought {
             this.memory = [];
         }
         if(actions) {
-            this.updateActionNeurons(actions, inputs);
             let weightedActions: Array<any> = [],
                 totalSignalStrength = 0;
             this.root.connect(inputs, this.EFFORT, (weightedAction: any) => {
@@ -90,7 +87,8 @@ export class Thought {
             let action;
             if (weightedActions.length) {
                 let averageSignalStrength = totalSignalStrength / weightedActions.length;
-                let max = 0;
+                let max = 0,
+                    oldLength = weightedActions.length;
                 weightedActions = weightedActions.reduce((aboveAverageActions, weightedAction) => {
                     if (weightedAction.signalStrength >= averageSignalStrength) {
                         if(weightedAction.signalStrength > max) {
@@ -100,16 +98,21 @@ export class Thought {
                     }
                     return aboveAverageActions;
                 }, []);
-                let chosenWeightedAction = MathUtil.weightedRandom(weightedActions, null, 'signalStrength');
-                action = chosenWeightedAction.action;
-                this.memory.push({action: chosenWeightedAction.neuron, inputs: inputs});
-            } else {
+                if(!(weightedActions.length/oldLength > 0.6 && Math.random() > 0.5)) {
+                    let chosenWeightedAction = MathUtil.weightedRandom(weightedActions, null, 'signalStrength');
+                    action = chosenWeightedAction.action;
+                    this.memory.push({action: chosenWeightedAction.neuron, inputs: inputs});
+                }
+            }
+
+            if(!action) {
                 action = actions[Math.floor(Math.random() * actions.length)];
                 let logic = Util.getLogic(inputs),
                     newActionNeuron = new ActionNeuron(this.root, action.name, logic);
                 this.root.addChild(newActionNeuron);
                 this.memory.push({action: newActionNeuron, inputs: inputs});
             }
+
             action.callback();
         }
     };
@@ -121,7 +124,7 @@ export class Thought {
         for(let i = 0; i < this.memory.length; i++) {
             modifier = (this.memory.length - i);
             current = this.memory[i];
-            current.action.mutate((rating + ((modifier - 1) * 0.5))/ modifier, 0.5, current.inputs);
+            current.action.mutate(((rating * i) + ((modifier - 1) * 0.5))/ modifier, 0.5, current.inputs);
         }
     }
 
@@ -138,33 +141,14 @@ export class Thought {
         return action;
     }
 
-    private updateActionNeurons(actions: Array<any>, inputs: any): void {
-        let action;
-        for(let i = 0; i < actions.length; i++) {
-            action = actions[i];
-            if(!this.containsActionNeuron(action)) {
-                let logic = Util.getLogic(inputs);
-                let actionNeuron = new ActionNeuron(this.root, action.name, logic);
-                this.root.addChild(actionNeuron);
-                this.actionNeurons.push(actionNeuron);
-            }
-        }
-
-    }
-
-    private containsActionNeuron(action: any): boolean {
-        let found = false;
-        for(let i = 0; !found && i < this.actionNeurons.length; i++) {
-            found = this.actionNeurons[i].getAction() === action.name;
-        }
-        return found;
-    }
-
     public printTree() {
         return this.root.printTree(0);
     }
 
     public printJSON() {
-        return `[{${this.root.printJSON({id: 0})}}]`;
+        let idObj = {id: 0},
+            result = `[{${this.root.printJSON(idObj)}}]`;
+        console.log('Neurons: ', idObj.id);
+        return result;
     }
 }

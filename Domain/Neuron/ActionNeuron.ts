@@ -33,7 +33,7 @@ export class ActionNeuron extends Neuron {
         let jsonString = `"${++idObj.id}":{"id": ${idObj.id}`;
         if(this.logic) {
             for(let key in this.logic) {
-                jsonString = jsonString + `, "${key}": "${this.logic[key].value}"`
+                jsonString = jsonString + `, "${key}": "${this.logic[key].value}-${Math.floor(this.logic[key].true * 1000)}-${Math.floor(this.logic[key].false * 1000)}-${Math.floor(this.logic[key].weight * 1000)}"`
             }
         }
         return jsonString + '}';

@@ -2,15 +2,16 @@ import { Game } from "./Game";
 import { Thought } from "../../Worker/Thought";
 import { Goal } from "../../Domain/index";
 
-const gameCount: number = 1000;
+const gameCount: number = 10000;
 
 
-let network = new Thought();
+let network = new Thought(),
+    network2 = new Thought();
 
 network.addGoals([
     new Goal({player: 'X', gameOver: 'X'}, 1, "Win as X"),
     new Goal({player: 'O', gameOver: 'O'}, 1, "Win as O"),
-    new Goal({gameOver: 'Draw'}, 0.2, "Draw"),
+    new Goal({gameOver: 'Draw'}, 0.6, "Draw"),
     new Goal({player: 'X', gameOver: 'O'}, 0, "Lose as X"),
     new Goal({player: 'O', gameOver: 'X'}, 0, "Lose as O")
 ]);
@@ -28,16 +29,22 @@ let observers: Array<any> = [
     }
 ];
 
+let oldDraw = 0,
+    oldP1 = 0,
+    oldP2 = 0;
+
 let roles: Array<string> = ['X', 'O'];
 let drawCount: number = 0;
 for(let i = 0; i < gameCount; i++) {
     playGame();
-     if(i%100 === 0) {
-         displayResults(i);
+     if(i%20 === 0) {
+         //displayResults(i);
+         displayLines();
      }
 }
 displayResults();
-//console.log(network.printJSON());
+let json = network.printJSON();
+//console.log(json);
 function displayResults(count?: number) {
     console.log('-------------------------');
     console.log(observers[0].name + ' wins: ' + observers[0].winCount);
@@ -49,6 +56,21 @@ function displayResults(count?: number) {
         console.log('Total Games: ' + gameCount);
     }
     console.log('-------------------------');
+}
+
+function displayLines() {
+    let p1 = observers[0].winCount - oldP1,
+        p2 = observers[1].winCount - oldP2,
+        draw = drawCount - oldDraw,
+        max = Math.max(p1, p2, draw),
+        arr = Array(max);
+    arr[p1] = 'X';
+    arr[p2] = 'O';
+    arr[draw] = '-';
+    console.log(arr.join(' '));
+    oldP1 = observers[0].winCount;
+    oldP2 = observers[1].winCount;
+    oldDraw = drawCount;
 }
 
 function playGame() {
@@ -63,6 +85,7 @@ function playGame() {
             boardObservation.inputs.player = player.next.role;
             player.next.observer.observe(boardObservation.inputs);
             if(game.checkForWin(player.role)) {
+                delete boardObservation.actions;
                 gameOver = true;
                 player.observer.winCount++;
                 boardObservation.inputs.gameOver = player.role;

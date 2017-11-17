@@ -38,7 +38,7 @@ export class Neuron {
             current: any;
         for (let key in this.logic) {
             current = this.logic[key];
-            total += current[current.check(inputs)];
+            total += current[current.check(inputs)] * current.weight;
             count++;
         }
         return total/count;
@@ -52,11 +52,14 @@ export class Neuron {
             follows = current.check(inputs) + '';
             if(follows) {
                 current[follows] = (current[follows] + reinforceStrength)/2;
+                if(reinforceStrength > 0.5) {
+                    current.weight = (current.weight + reinforceStrength)/2;
+                }
             } else if(reinforceStrength > 0.5){
                 current.weight = (current.weight + (1 - reinforceStrength))/2;
             }
         }
-        if(reinforceStrength > 0.7) {
+        if(reinforceStrength > 0.7 && Math.random() > 0.7) {
             this.expand(inputs, Util.getLogic(inputs, 0.7));
         }
         this.parent.mutate((reinforceStrength + decay)/2, decay, inputs);
@@ -106,7 +109,7 @@ export class Neuron {
         let jsonString = `"${++idObj.id}":{"id": ${idObj.id}`;
         if(this.logic) {
             for(let key in this.logic) {
-                jsonString = jsonString + `, "${key}": "${this.logic[key].value}"`
+                jsonString = jsonString + `, "${key}": "${this.logic[key].value}-${Math.floor(this.logic[key].true * 1000)}-${Math.floor(this.logic[key].false * 1000)}-${Math.floor(this.logic[key].weight * 1000)}"`
             }
         }
         if(this.children.length) {
