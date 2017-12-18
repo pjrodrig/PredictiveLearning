@@ -2,118 +2,57 @@ import { Util } from "../../Util/index"
 
 export class Neuron {
 
-    private children: Array<Neuron>;
-    protected parent: Neuron;
-    protected signalModifier: number;
-    protected logic: any; //{inputKey: function(inputValue): boolean true if matches pattern
-    private logicMutationSeverity: number;
+/**
+All inputs must at least have the property "value", which is a number. that number can eventually become a list for experimentation
 
-    constructor(parent: Neuron, signalModifier: number, logic?: any, logicMutationSeverity?: number) {
-        this.parent = parent;
-        if(this.parent) {
-            this.parent.addChild(this);
-        }
-        this.logic = logic || null;
-        this.signalModifier = signalModifier;
-        this.children = [];
-        this.logicMutationSeverity = logicMutationSeverity;
+first an input is decided whether to be "good" or not
+a prediction is made
+if nothing is known about something, then there will be no prediction
+if the prediction is wrong look at what changed between this time and the last time(s) and compare what changed
+
+if the prediction is right, look at other things that did not change between this time and last time(s)
+
+prediction should eventually be a function that returns a boolean, but for now it will just be positve, negative, or neutral
+0 if it knows nothing, which would mean that we predict nothing will change.
+1 if it thinks the value of this neuron will increase
+-1 if it thinks the value of this neuron will decrease
+
+the third peice is memory.
+fast thread is gathering all possible neurons that fit the provided criteria
+medium thread is the search through memory of what happened last time
+slow thread is a weighted random based on history only through manipulation of weight
+
+if a good thing appears in all three, then it will be most likely to be picked
+if a good neuron appears in memory when making a selection, but is not necessarily reflected in the weight, it is likely to be chosen
+if a neuron exists in only the possibilities, then it will be least likely to be chosen, but the choice is still random
+
+tick tack toe inputs would be {x: 1, y: 2: value: null} there would be no labels for the entire input
+
+
+breeding would consist of definitely including things that are strongly positive or negative in each parent, and picking randomly otherwise for decisions
+**/
+
+private inputs: Array<any>;
+private prediction: number;
+private memory: Array<any>;
+
+    constructor(inputs: Array<any>) {
+
     }
 
-    public connect(inputs: any, signalStrength: number, callback: any): void {
-        signalStrength = signalStrength * this.signalModifier;
-        if(signalStrength > ) {
-            let child;
-            for(let i = 0; i < this.children.length; i++) {
-                child = this.children[i];
-                if(child.checkLogic(inputs)) {
-                    child.connect(inputs, signalStrength, callback);
-                }
+    public getRelevance(inputs: Array<any>): number {
+        let relevance = 0,
+            jsonInputs = inputs.map((input) => JSON.stringify(input, Object.keys(input).sort()));
+        for(let i = 0; i < jsonInputs.length; i++) {
+            if (jsonInputs === JSON.stringify(sortMyObj, Object.keys(sortMyObj).sort())) {
+                relevance++;
             }
         }
+        return relevance;
     }
 
-    public checkLogic(inputs: any): boolean {
-        if(!this.logic) {
-            this.logic = Util.getRandomLogic(inputs);
-        }
-        if(this.logicMutationSeverity) {
-            this.mutateLogic(inputs);
-        }
-        let follows = true;
-        for(let key in this.logic) {
-            if(this.logic[key] && !this.logic[key](inputs)) {
-                follows = false;
-                break;
-            }
-        }
-        return follows;
-    }
+    public getWeight(inputs: Array<any>): number {
 
-    private mutateLogic(inputs: any) {
-        let keys = Object.keys(this.logic),
-            mutations = Math.floor(keys.length * this.logicMutationSeverity),
-            key: string;
-        while(mutations) {
-            key = keys.splice(Math.floor(Math.random() * keys.length), 1)[0];
-            this.logic[key] = (currentInputs: any) => {
-                return inputs[key] === currentInputs[key];
-            };
-            mutations--;
-        }
-        this.logicMutationSeverity = 0;
-    }
-
-    public mutate(reinforceStrength: number, decay: number): void { //TODO: OPTIMIZE I guessed what to do here
-        if((reinforceStrength >= 0.5 && this.signalModifier < reinforceStrength)
-            || (reinforceStrength < 0.5 && this.signalModifier > reinforceStrength)) {
-            this.signalModifier = (reinforceStrength + this.signalModifier)/2;
-        }
-        this.parent.mutate((reinforceStrength + decay) / 2, decay);
-        if(Math.random() > 0.8) {
-            this.copyChildrenToParent(new Neuron(this.parent, 0.5, this.logic, 1 - this.signalModifier));
-        }
-        if(Math.random() > 0.8) {
-            this.getCopy(new Neuron(this.parent, 0.5, this.logic, 1 - this.signalModifier));
-        }
-        if(this.signalModifier < 0.2) {
-            this.parent.removeChild(this);
-        }
-    }
-
-    public copyChildrenToParent(parent: Neuron) {
-        this.children.map((child) => {
-            return child.getCopy(parent);
-        });
-    }
-
-    public getCopy(parent: Neuron) {
-        let copy = new Neuron(parent, this.signalModifier, this.logic);
-        this.copyChildrenToParent(copy);
-        return copy;
-    }
-
-    public removeChild(child: Neuron): void {
-        for(let i = 0; i < this.children.length; i++) {
-            if(child === this.children[i]) {
-                this.children.splice(i, 1);
-                break;
-            }
-        }
-        if(!this.children.length) {
-            this.parent.removeChild(this);
-        }
-    }
-
-    public addChild(child: Neuron): void {
-        this.children.push(child);
-    }
-
-    public printTree(depth: number) {
-        let treeString = depth ? `"${depth}-${this.signalModifier}"` : '';
-        for(let i = 0; i < this.children.length; i++) {
-            treeString = treeString + `"${depth}-${this.signalModifier}"->` + this.children[i].printTree(depth + 1)
-        }
-        return treeString;
     }
 
 }
